@@ -31,6 +31,8 @@ const (
 	INPUT_INVALID
 )
 
+throttle := 0.0
+
 // Tested on a Mini Cooper on Le Mans track
 fn update(dt: real, pos, vel: ^mat.Vec, attMat: ^mat.Mat, rate: ^mat.Vec, patch: track.PatchHandle, inputs: ^[INPUT_INVALID]real32): bool {
 	att := attMat.toAttAngles()
@@ -48,7 +50,13 @@ fn update(dt: real, pos, vel: ^mat.Vec, attMat: ^mat.Mat, rate: ^mat.Vec, patch:
 	xTrackErrGain := 0.5
 	hdgErrGain := 1.5
 
-	inputs[INPUT_THROTTLE] = 0.3
+	targetSpeed := 20.0
+	throttle += dt / 3.0 * (targetSpeed - vel.norm())
+	if throttle < 0.0 {throttle = 0.0}
+	if throttle > 0.5 {throttle = 0.5}
+
+
+	inputs[INPUT_THROTTLE] = throttle
 	inputs[INPUT_STEER_RIGHT] = -xTrackErrGain * xTrackErr - hdgErrGain * hdgErr
 
 	printf(repr(xTrackErr) + repr(hdgErr) + '\n')
