@@ -5,7 +5,7 @@ VDrift is a cross-platform, open source driving simulation made with drift
 racing in mind. It is released under the [GNU General Public License (GPL) v3](http://www.gnu.org/licenses/gpl-3.0.en.html).
 It is currently available for FreeBSD, Linux, Mac OS X and Windows.
 
-This VDrift fork supports embedded scripting with [Umka](https://github.com/vtereshkov/umka-lang) to let you design, tune, debug and test your own racing car autopilot. When you engage the autopilot by pressing `F10`, the autopilot logic contained in [control.um](https://github.com/vtereshkov/vdrift/blob/master/control.um) and [track.um](https://github.com/vtereshkov/vdrift/blob/master/track.um) is invoked. The default scripts implement a vanilla PD (proportional/differential) controller, which is not quite satisfactory at high speeds but that can serve as a starting point for your experiments. The Umka interpreter supports "warm reload" by recompiling the scripts every time you engage the autopilot.
+This VDrift fork supports embedded scripting with [Umka](https://github.com/vtereshkov/umka-lang) to let you design, tune, debug and test your own racing car autopilot. When you engage the autopilot by pressing `F10`, the autopilot logic contained in [control.um](https://github.com/vtereshkov/vdrift/blob/master/control.um) and [track.um](https://github.com/vtereshkov/vdrift/blob/master/track.um) is invoked. The default scripts implement a vanilla PD (proportional/differential) controller, which is not quite satisfactory at high speeds but can serve as a starting point for your experiments. The Umka interpreter supports "warm reload" by recompiling the scripts every time you engage the autopilot.
 
 Mission Statement
 -----------------
