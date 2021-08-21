@@ -53,6 +53,7 @@
 #include "content/contentmanager.h"
 #include "updatemanager.h"
 #include "game_downloader.h"
+#include "carautopilot.h"
 
 #include "BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h"
 #include "BulletCollision/BroadphaseCollision/btDbvtBroadphase.h"
@@ -382,6 +383,8 @@ private:
 
 	std::unique_ptr <ForceFeedback> forcefeedback;
 	float ff_update_time;
+
+    CarAutopilot autopilot;
 };
 
 #endif

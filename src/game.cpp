@@ -130,7 +130,8 @@ Game::Game(std::ostream & info_out, std::ostream & error_out) :
 	track(),
 	replay(timestep),
 	http("/tmp"),
-	ff_update_time(0)
+	ff_update_time(0),
+	autopilot("control.um", error_out)
 {
 	dynamics.setContactAddedCallback(&CarDynamics::WheelContactCallback);
 }
@@ -401,7 +402,7 @@ bool Game::InitCoreSubsystems()
 	content.addSharedPath(pathmanager.GetCarPartsPath());
 	content.addSharedPath(pathmanager.GetTrackPartsPath());
 
-	eventsystem.Init(info_output);
+	eventsystem.Init(info_output, 30);
 
 	return true;
 }
@@ -875,6 +876,9 @@ void Game::AdvanceGameLogic()
 		ai.Update(timestep, &car_dynamics[0], car_dynamics.size());
 		PROFILER.endBlock("ai");
 
+		// Autopilot script
+        autopilot.Update(timestep, car_dynamics[player_car_id]);
+
 		//PROFILER.beginBlock("input");
 		ProcessCarInputs();
 		//PROFILER.endBlock("input");
@@ -1327,6 +1331,18 @@ void Game::ProcessCarInputs()
 	}
 	#endif
 
+	// Engage autopilot
+    static bool button_pressed = false;
+    if (button_pressed != eventsystem.GetKeyState(SDLK_F10).GetState())
+    {
+        button_pressed = !button_pressed;
+        if (button_pressed)
+        {
+            autopilot.Engage(!autopilot.IsEngaged());
+            info_output << std::string("Autopilot ") + (autopilot.IsEngaged() ? "on" : "off") << std::endl;
+        }
+    }
+
 	for (unsigned carid = 0, aiid = 0; carid < unsigned(car_dynamics.size()); ++carid)
 	{
 		CarDynamics & car = car_dynamics[carid];
@@ -1336,7 +1352,12 @@ void Game::ProcessCarInputs()
 		if (replay.GetPlaying())
 			carinputs = replay.PlayFrame(carid, car);
 		else if (carid == player_car_id && player_control)
-			carinputs = car_controls_local.GetInputs();
+        {
+            if (autopilot.IsEngaged())
+                carinputs = autopilot.GetInputs();
+            else
+                carinputs = car_controls_local.GetInputs();
+        }
 		else
 			carinputs = ai.GetInputs(aiid++);
 

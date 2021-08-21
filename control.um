@@ -1,0 +1,58 @@
+import (
+	"std.um"
+	"mat.um"
+	"track.um"
+)
+
+const deg = std.pi / 180.0
+
+const (
+	INPUT_THROTTLE = 0
+	INPUT_NOS
+	INPUT_BRAKE
+	INPUT_HANDBRAKE
+	INPUT_CLUTCH
+	INPUT_STEER_LEFT
+	INPUT_STEER_RIGHT
+	INPUT_SHIFT_UP
+	INPUT_SHIFT_DOWN
+	INPUT_START_ENGINE
+	INPUT_ABS_TOGGLE
+	INPUT_TCS_TOGGLE
+	INPUT_NEUTRAL
+	INPUT_FIRST_GEAR
+	INPUT_SECOND_GEAR
+	INPUT_THIRD_GEAR
+	INPUT_FOURTH_GEAR
+	INPUT_FIFTH_GEAR
+	INPUT_SIXTH_GEAR
+	INPUT_REVERSE
+	INPUT_ROLLOVER
+	INPUT_INVALID
+)
+
+// Tested on a Mini Cooper on Le Mans track
+fn update(dt: real, pos, vel: ^mat.Vec, attMat: ^mat.Mat, rate: ^mat.Vec, patch: track.PatchHandle, inputs: ^[INPUT_INVALID]real32): bool {
+	att := attMat.toAttAngles()
+
+	lookahead := 1
+
+	var patchData: track.PatchData
+	if !track.getPatchData(patch, 1, &patchData) {
+		return false
+	}
+
+	xTrackErr := patchData.getXTrackErr(pos, 1)
+	hdgErr := patchData.getHdgErr(pos, &att, 1)
+
+	xTrackErrGain := 0.5
+	hdgErrGain := 1.5
+
+	inputs[INPUT_THROTTLE] = 0.3
+	inputs[INPUT_STEER_RIGHT] = -xTrackErrGain * xTrackErr - hdgErrGain * hdgErr
+
+	printf(repr(xTrackErr) + repr(hdgErr) + '\n')
+	return true
+}
+
+fn main() {}

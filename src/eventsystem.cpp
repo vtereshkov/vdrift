@@ -35,6 +35,7 @@ using std::endl;
 EventSystem::EventSystem() :
 	lasttick(0),
 	dt(0),
+	desired_dt(0),
 	quit(false),
 	mousex(0),
 	mousey(0),
@@ -50,8 +51,12 @@ EventSystem::~EventSystem()
 	// dtor
 }
 
-void EventSystem::Init(std::ostream & info_output)
+void EventSystem::Init(std::ostream & info_output, double desired_fps)
 {
+	assert(desired_fps > 0.0);
+	desired_dt = 1.0 / desired_fps;
+	dt = desired_dt;
+
 	const int num_joysticks = SDL_NumJoysticks();
 
 	info_output << num_joysticks << " joystick";
@@ -86,6 +91,9 @@ void EventSystem::BeginFrame()
 		lasttick = SDL_GetTicks();
 	else
 	{
+		const double delay = (desired_dt > dt) ? (desired_dt - dt) : 0.0;
+		SDL_Delay(static_cast<unsigned int>(delay * 1000.0));
+
 		double thistick = SDL_GetTicks();
 
 		dt = (thistick-lasttick)*1E-3;

@@ -933,6 +933,11 @@ btVector3 CarDynamics::GetVelocity(const btVector3 & pos) const
 	return body->getVelocityInLocalPoint(pos - body->getCenterOfMassPosition());
 }
 
+const btVector3 & CarDynamics::GetAngularVelocity() const
+{
+	return body->getAngularVelocity();
+}
+
 btScalar CarDynamics::GetSpeedMPS() const
 {
 	return wheel[0].GetRadius() * wheel[0].GetAngularVelocity();

@@ -108,7 +108,7 @@ public:
 
 	~EventSystem();
 
-	void Init(std::ostream & info_output);
+	void Init(std::ostream & info_output, double desired_fps);
 
 	void BeginFrame();
 
@@ -193,6 +193,7 @@ public:
 private:
 	double lasttick;
 	double dt;
+    double desired_dt;
 	bool quit;
 
 	std::vector <Joystick> joysticks;

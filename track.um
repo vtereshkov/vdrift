@@ -1,0 +1,39 @@
+import (
+	"mat.um"
+	"std.um"
+)
+
+type (
+	PatchHandle* = ^struct {/*Actually a C++ class*/}
+	PatchData* = [4]mat.Vec
+)
+
+fn wrap*(x: real): real {
+    for x >  std.pi {x -= 2 * std.pi}
+    for x < -std.pi {x += 2 * std.pi}
+    return x    
+}
+
+fn getPatchData*(handle: PatchHandle, lookahead: int, data: ^PatchData): bool
+
+fn (p: ^PatchData) getFront*(): mat.Vec {
+	return p[0].add(p[1]).mul(0.5)
+}
+
+fn (p: ^PatchData) getRear*(): mat.Vec {
+	return p[2].add(p[3]).mul(0.5)
+}
+
+fn (p: ^PatchData) getXTrackErr*(pos: ^mat.Vec, dir: int): real {
+	front := p.getFront()
+	rear := p.getRear()
+	axis := front.sub(rear).normalize()
+	return dir * pos.sub(rear).cross(axis)[2]
+}
+
+fn (p: ^PatchData) getHdgErr*(pos, att: ^mat.Vec, dir: int): real {
+	front := p.getFront()
+	rear := p.getRear()
+	axis := front.sub(rear).normalize()
+	return wrap(att[2] - atan2(dir * axis[0], dir * axis[1]))
+}
